@@ -1,8 +1,8 @@
 Aula Zero
 - [X] Setup do banco
 - [X] Seeding do banco
-- [] introduçãoao Next.js
-- [] Tailwind e Shadcdn
+- [X] introduçãoao Next.js
+- [X] Tailwind e Shadcdn
 - [] Git Hooks
 
 
