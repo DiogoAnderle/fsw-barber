@@ -18,6 +18,31 @@ const Home = async () => {
     },
   })
 
+  const now = new Date()
+  const dayName = new Array(
+    "Domingo",
+    "Segunda-Feira",
+    "Terça-Feira",
+    "Quarta-Feira",
+    "Quinta-Feira",
+    "Sexta-Feira",
+    "Sábado",
+  )
+  const monthName = new Array(
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+  )
+
   return (
     <div>
       {/* HEADER */}
@@ -25,7 +50,7 @@ const Home = async () => {
       {/* SAUDAÇÃO */}
       <div className="p-5">
         <h2 className="text-xl font-bold">Olá, Diogo!</h2>
-        <p className="">Quinta-feira, 08 de agosto de 2024.</p>
+        <p className="">{`${dayName[now.getDay()]}, ${now.getDate()}  de ${monthName[now.getMonth()]} de ${now.getFullYear()}`}</p>
 
         {/* BUSCA */}
         <div className="mt-6">
