@@ -9,8 +9,18 @@ import { quickSearchOptions } from "./_constants/quickSearch"
 import BookingItem from "./_components/booking-item"
 import Search from "./_components/search"
 import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { authOptions } from "./_lib/auth"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "./_components/ui/carousel"
 
 const Home = async () => {
+  const session = await getServerSession(authOptions)
   const barbershops = await db.barbershop.findMany({})
   const popularBarbershops = await db.barbershop.findMany({
     orderBy: {
@@ -18,7 +28,29 @@ const Home = async () => {
     },
   })
 
+  const bookings = session?.user
+    ? await db.booking.findMany({
+        where: {
+          userId: (session?.user as any).id,
+          date: {
+            gte: new Date(),
+          },
+        },
+        include: {
+          service: {
+            include: {
+              barbershop: true,
+            },
+          },
+        },
+        orderBy: {
+          date: "asc",
+        },
+      })
+    : []
+
   const now = new Date()
+
   const dayName = new Array(
     "Domingo",
     "Segunda-Feira",
@@ -28,6 +60,7 @@ const Home = async () => {
     "Sexta-Feira",
     "Sábado",
   )
+
   const monthName = new Array(
     "janeiro",
     "fevereiro",
@@ -49,7 +82,11 @@ const Home = async () => {
       <Header />
       {/* SAUDAÇÃO */}
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá, Diogo!</h2>
+        {session?.user && (
+          <h2 className="text-xl font-bold">
+            Olá, {(session.user as any).name.split(" ")[0]}!
+          </h2>
+        )}
         <p className="">{`${dayName[now.getDay()]}, ${now.getDate()}  de ${monthName[now.getMonth()]} de ${now.getFullYear()}`}</p>
 
         {/* BUSCA */}
@@ -58,7 +95,7 @@ const Home = async () => {
         </div>
 
         {/* BUSCA RÁPIDA */}
-        <section className="mt-6 flex gap-3 overflow-x-scroll">
+        <section className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
             <Button
               className="gap-2"
@@ -90,14 +127,30 @@ const Home = async () => {
         </div>
 
         {/* AGENDAMENTO */}
-        <BookingItem />
+        <h2 className="text-x2 mb-2 mt-6 font-bold uppercase text-gray-400">
+          Agendamentos
+        </h2>
+
+        <Carousel className="relative">
+          <div className="flex justify-end">
+            <CarouselContent className="-ml-2 max-w-[95%] text-xs md:-ml-4">
+              {bookings.map((booking) => (
+                <CarouselItem key={booking.id}>
+                  <BookingItem booking={booking} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="absolute left-[-3%] top-[50%]" />
+            <CarouselNext className="absolute right-[-3%] top-[50%]" />
+          </div>
+        </Carousel>
 
         {/* RECOMENDADOS */}
         <section>
           <h2 className="text-x2 mb-2 mt-6 font-bold uppercase text-gray-400">
             Recomendados
           </h2>
-          <div className="flex gap-4">
+          <div className="flex gap-4 [&::-webkit-scrollbar]:hidden">
             {barbershops.map((barbershop) => (
               <BarbershopItem key={barbershop.id} barbershop={barbershop} />
             ))}
@@ -109,7 +162,7 @@ const Home = async () => {
           <h2 className="text-x2 mb-2 mt-6 font-bold uppercase text-gray-400">
             Recomendados
           </h2>
-          <div className="flex gap-4">
+          <div className="flex gap-4 [&::-webkit-scrollbar]:hidden">
             {popularBarbershops.map((barbershop) => (
               <BarbershopItem key={barbershop.id} barbershop={barbershop} />
             ))}
