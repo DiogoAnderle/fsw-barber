@@ -18,6 +18,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "./_components/ui/carousel"
+import { format } from "date-fns"
+import { ptBR } from "date-fns/locale"
 
 const Home = async () => {
   const session = await getServerSession(authOptions)
@@ -49,45 +51,21 @@ const Home = async () => {
       })
     : []
 
-  const now = new Date()
-
-  const dayName = new Array(
-    "Domingo",
-    "Segunda-Feira",
-    "Terça-Feira",
-    "Quarta-Feira",
-    "Quinta-Feira",
-    "Sexta-Feira",
-    "Sábado",
-  )
-
-  const monthName = new Array(
-    "janeiro",
-    "fevereiro",
-    "março",
-    "abril",
-    "maio",
-    "junho",
-    "julho",
-    "agosto",
-    "setembro",
-    "outubro",
-    "novembro",
-    "dezembro",
-  )
-
   return (
     <div>
       {/* HEADER */}
       <Header />
       {/* SAUDAÇÃO */}
       <div className="p-5">
-        {session?.user && (
-          <h2 className="text-xl font-bold">
-            Olá, {(session.user as any).name.split(" ")[0]}!
-          </h2>
-        )}
-        <p className="">{`${dayName[now.getDay()]}, ${now.getDate()}  de ${monthName[now.getMonth()]} de ${now.getFullYear()}`}</p>
+        <h2 className="text-xl font-bold">
+          Olá, {session?.user ? session?.user.name : "bem vindo"}!
+        </h2>
+        <p>
+          <span className="capitalize">
+            {format(new Date(), "EEEE, d ", { locale: ptBR })}
+          </span>
+          de {format(new Date(), "MMMM 'de' Y.", { locale: ptBR })}
+        </p>
 
         {/* BUSCA */}
         <div className="mt-6">
