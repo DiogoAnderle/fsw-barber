@@ -13,6 +13,8 @@ import { notFound } from "next/navigation"
 import PhoneItem from "@/app/_components/phone-item"
 import { Sheet, SheetTrigger } from "@/app/_components/ui/sheet"
 import SidebarSheet from "@/app/_components/sidebar-sheet"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/app/_lib/auth"
 
 interface BarberShopPageProps {
   params: {
@@ -32,6 +34,9 @@ const BarbershopPage = async ({ params }: BarberShopPageProps) => {
   if (!barbershop) {
     return notFound()
   }
+
+  const session = await getServerSession(authOptions)
+  console.log(session?.user?.name)
 
   return (
     <div>
@@ -103,8 +108,8 @@ const BarbershopPage = async ({ params }: BarberShopPageProps) => {
 
       {/* Contato */}
       <div className="space-y-3 p-5">
-        {barbershop.phones.map((phone) => (
-          <PhoneItem key={phone} phone={phone} />
+        {barbershop.phones.map((phone, index) => (
+          <PhoneItem key={index} phone={phone} />
         ))}
       </div>
     </div>
